@@ -25,4 +25,7 @@ ImageArg is a multimodal dataset of tweets (text + image) created to study how i
   - multimodal experiments (`main_multimodality.py`).
 
 ## References
-- Z. Liu, M. Guo, Y. Dai and D. Litman (2022). *ImageArg: A Multi-modal Tweet Dataset for Image Persuasiveness Mining*. Proceedings of the 9th Workshop on Argument Mining. See the full citation in [`REFERENCES.bib`](../REFERENCES.bib).
+- Liu et al. (2022). *ImageArg: A Multi-modal Tweet Dataset for Image Persuasiveness Mining*.  
+- Liu et al. (2023). *Overview of ImageArg-2023: The First Shared Task in Multimodal Argument Mining*.
+
+See the full citation in [`REFERENCES.bib`](../REFERENCES.bib).
