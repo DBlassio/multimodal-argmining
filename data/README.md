@@ -1,6 +1,6 @@
 # ImageArg — dataset notes
 
-**Source:** *ImageArg: A Multi-modal Tweet Dataset for Image Persuasiveness Mining* (Liu et al., ARGMINING 2022). Code & annotated files: MeiqiGuo/ArgMining2022-ImageArg on GitHub. :contentReference[oaicite:1]{index=1}
+**Source:** *ImageArg: A Multi-modal Tweet Dataset for Image Persuasiveness Mining* (Liu et al., ARGMINING 2022). Code & annotated files: MeiqiGuo/ArgMining2022-ImageArg on [`GitHub`](https://github.com/ImageArg/ImageArg-Shared-Task).
 
 ## What ImageArg is (high-level)
 ImageArg is a multimodal dataset of tweets (text + image) created to study how images affect the persuasiveness of argumentative social media content. The dataset was developed with a careful annotation pipeline that first labels stance, and then (for tweets with a clear stance) annotates image persuasiveness, image content type, and image persuasion mode (logos/pathos/ethos). :contentReference[oaicite:2]{index=2}
