@@ -13,7 +13,7 @@
     "evaluation_strategy": "epoch",
     "metric_for_best_model": "f1",
     "output_dir": "./models/roberta_finetuned",
-    "results_csv": "./models/results_summary.csv",
+    "results_csv": "./src/train/results_summary.csv",
     "saved_model_path": "models/text",
     "data_paths": {
         "base_path_colab": "/content/drive/MyDrive/multimodal-argmining",
