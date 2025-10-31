@@ -39,11 +39,11 @@ This section contains all the experiments performed on our **textual stance clas
 
 ## Recommended Experiment Order
 
-1. PEFT  
+0. PEFT  
+1. Performance Benchmark 
 2. Data Augmentation  
-3. Performance Benchmark  
-4. Hyperparameter Optimization (HPO) 
-5. Model Ensembles
+3. Hyperparameter Optimization (HPO) 
+4. Model Ensembles
 
 ## Notes
 
