@@ -1,0 +1,26 @@
+{
+    "model_name": "roberta-base",
+    "learning_rate": 7.72537838930735e-06,
+    "weight_decay": 0.07080725777960455,
+    "batch_size": 16,
+    "num_train_epochs": 4,
+    "warmup_ratio": 0.03636499344142013,
+    "dropout": 0.055021352956030146,
+    "max_length": 105,
+    "augmented": true,
+    "seed": 42,
+    "early_stopping_patience": 2,
+    "evaluation_strategy": "epoch",
+    "metric_for_best_model": "f1",
+    "output_dir": "./models/roberta_finetuned",
+    "results_csv": "./models/results_summary.csv",
+    "saved_model_path": "models/text",
+    "data_paths": {
+        "base_path_colab": "/content/drive/MyDrive/multimodal-argmining",
+        "base_path_local": "C:/Users/diego/Desktop/Master Neuro/M2/Intership_NLP/multimodal-argmining",
+        "train_file": "data/train_augmented_paraphrase.csv",
+        "train_file_no_aug": "data/train.csv",
+        "dev_file": "data/dev.csv",
+        "test_file": "data/test.csv"
+    }
+}
