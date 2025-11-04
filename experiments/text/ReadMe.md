@@ -37,7 +37,7 @@ This section contains all the experiments performed on our **textual stance clas
 
 ---
 
-## Recommended Experiment Order
+## Recommended Experiment Order: 
 
 0. PEFT  
 1. Performance Benchmark 
