@@ -36,10 +36,10 @@ config_path = os.path.join(os.path.dirname(__file__), "text_config.json")
 with open(config_path, "r") as f:
     config = json.load(f)
 
-MODEL_NAME = config["model_name"]
-MAX_LEN = config["max_length"]
-SEED = config["seed"]
-AUGMENTED = config["augmented"]
+MODEL_NAME = config["model_parameters"]["model_name"]
+MAX_LEN = config["model_parameters"]["max_length"]
+SEED = config["misc"]["seed"]
+AUGMENTED = config["data_settings"]["use_augmented_data"]
 
 # Set random seeds
 np.random.seed(SEED)
@@ -58,9 +58,9 @@ except ImportError:
 if IN_COLAB:
     from google.colab import drive
     drive.mount("/content/drive")
-    path = config["data_paths"]["base_path_colab"]
+    path = config["paths"]["data"]["base_path_colab"]
 else:
-    path = config["data_paths"]["base_path_local"]
+    path = config["paths"]["data"]["base_path_local"]
 
 os.chdir(path)
 print(f"Working directory: {path}")
@@ -75,12 +75,12 @@ print(f"Using device: {device}")
 # ===============================
 print("Loading dataset...")
 if AUGMENTED:
-    train_path = f"{path}/{config['data_paths']['train_file']}"
+    train_path = os.path.join(path, config['paths']['data']['train_dataset_augmented'])
 else:
-    train_path = f"{path}/{config['data_paths']['train_file_no_aug']}"
+    train_path = os.path.join(path, config['paths']['data']['train_dataset'])
 
-dev_path = f"{path}/{config['data_paths']['dev_file']}"
-test_path = f"{path}/{config['data_paths']['test_file']}"
+dev_path = os.path.join(path, config['paths']['data']['dev_dataset'])
+test_path = os.path.join(path, config['paths']['data']['test_dataset'])
 
 df_train = pd.read_csv(train_path)
 df_dev = pd.read_csv(dev_path)
@@ -95,7 +95,7 @@ def clean_text(text):
     return text
 
 for df in [df_train, df_dev, df_test]:
-    df["tweet_text"] = df["tweet_text"].apply(clean_text)
+    #df["tweet_text"] = df["tweet_text"].apply(clean_text)
     df["label"] = df["stance"].map(label2id)
 
 dataset_train = Dataset.from_pandas(df_train[["tweet_text", "label"]])
@@ -133,10 +133,10 @@ print("Tokenization complete.")
 # Model Setup
 # ===============================
 print("Loading model...")
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME,num_labels=2)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME,num_labels=2,
+                                                                hidden_dropout_prob=config["model_parameters"]["dropout"],
+                                                                attention_probs_dropout_prob=config["model_parameters"]["dropout"]).to(device)
 print(f"Model loaded: {MODEL_NAME}")
-
-
 # ===============================
 # Metrics
 # ===============================
@@ -160,20 +160,19 @@ def compute_metrics(eval_pred):
 # ===============================
 print("Setting up Trainer...")
 training_args = TrainingArguments(
-    output_dir=config["output_dir"],
-    eval_strategy=config["evaluation_strategy"],
-    save_strategy=config["evaluation_strategy"],
-    logging_strategy=config["evaluation_strategy"],
-    learning_rate=config["learning_rate"],
-    per_device_train_batch_size=config["batch_size"],
-    per_device_eval_batch_size=config["batch_size"],
-    num_train_epochs=config["num_train_epochs"],
-    weight_decay=config["weight_decay"],
-    warmup_ratio=config["warmup_ratio"],
-    load_best_model_at_end=True,
-    metric_for_best_model=config["metric_for_best_model"],
-    save_total_limit=2,
-    report_to="none"
+    output_dir=config["paths"]["output_dir"],
+    eval_strategy=config["training_parameters"]["eval_strategy"],
+    save_strategy=config["training_parameters"]["save_strategy"],
+    logging_strategy=config["training_parameters"]["logging_strategy"],
+    learning_rate=config["training_parameters"]["learning_rate"],
+    per_device_train_batch_size=config["training_parameters"]["batch_size"],
+    per_device_eval_batch_size=config["training_parameters"]["batch_size"],
+    num_train_epochs=config["training_parameters"]["num_train_epochs"],
+    weight_decay=config["training_parameters"]["weight_decay"],
+    warmup_ratio=config["training_parameters"]["warmup_ratio"],
+    load_best_model_at_end=config["training_parameters"]["load_best_model_at_end"],
+    report_to=config["training_parameters"]["report_to"],
+    metric_for_best_model=config["training_parameters"]["metric_for_best_model"]
 )
 
 trainer = Trainer(
@@ -182,14 +181,24 @@ trainer = Trainer(
     train_dataset=train_dataset_tok,
     eval_dataset=dev_dataset_tok,
     tokenizer=tokenizer,
-    compute_metrics=compute_metrics,
-    callbacks=[EarlyStoppingCallback(early_stopping_patience=config["early_stopping_patience"])]
+    compute_metrics=compute_metrics
 )
 
 # ===============================
 # Training
 # ===============================
-print("Starting training...")
+print("Starting training with the following parameters: ")
+
+print(f"\nModel Name: {MODEL_NAME}")
+print(f"Max Sequence Length: {MAX_LEN}")
+print(f"Use Augmented Data: {AUGMENTED}")
+print(f"Random Seed: {SEED}")
+print("Training Parameters:")
+for param in ["learning_rate", "weight_decay", "batch_size", "num_train_epochs", "warmup_ratio",
+              "eval_strategy", "save_strategy", "logging_strategy", "load_best_model_at_end",
+              "metric_for_best_model", "report_to"]:
+    value = config["training_parameters"].get(param)
+    print(f"  {param}: {value}")
 trainer.train()
 
 
@@ -222,21 +231,18 @@ results_df = pd.DataFrame([{
     "augmented": AUGMENTED,
     "seed": SEED
 }])
-
-results_csv_path = config["results_csv"]
-results_df.to_csv(results_csv_path, index=False)
-print(f"\nMetrics saved to: {results_csv_path}")
+save_path = os.path.join(config["paths"]["output_dir"], "results_summary.csv")
+results_df.to_csv(save_path, index=False)
+print(f"\nMetrics saved to: {save_path}")
 
 
 # ===============================
 # Save Model for Inference
 # ===============================
-saved_model_path = config["saved_model_path"]
+saved_model_path = os.path.join(config["paths"]["saved_model_path"], f"text_classifier_{MODEL_NAME}")
 os.makedirs(saved_model_path, exist_ok=True)
-
 model.save_pretrained(saved_model_path)
 tokenizer.save_pretrained(saved_model_path)
-
 print(f"\nModel and tokenizer saved to: {saved_model_path}")
 
 
@@ -259,7 +265,7 @@ plt.xlabel("Predicted Label")
 plt.ylabel("True Label")
 plt.tight_layout()
 safe_model_name = MODEL_NAME.replace("/", "_").replace("\\", "_")
-save_path = os.path.join(results_csv_path, f"confusion_matrix_{safe_model_name}.jpg")
+save_path = os.path.join(config["paths"]["output_dir"], f"confusion_matrix_{safe_model_name}.jpg")
 plt.savefig(save_path, dpi=300)
 plt.close()
 print(f"Confusion matrix saved to: {save_path}")
