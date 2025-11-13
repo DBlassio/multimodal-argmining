@@ -1,6 +1,6 @@
 # Textual Model Experiments
 
-This section contains all the experiments performed on our **textual stance classification models** for argument mining. The goal is to iteratively improve model performance, measured primarily by **F1-score (macro)**.
+This section contains all the experiments performed on our **textual stance classification models** for argument mining. The goal is to iteratively improve model performance, measured primarily by **F1-score (Binary - Positive Class)**.
 
 ---
 
