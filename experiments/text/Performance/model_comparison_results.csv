@@ -1,7 +1,0 @@
-Model,Accuracy_Mean,Accuracy_Std,Precision_Mean,Precision_Std,Recall_Mean,Recall_Std,F1_Mean,F1_Std
-microsoft/deberta-v3-base,0.8333,0.012,0.7322,0.0142,0.9096,0.0467,0.8108,0.0176
-roberta-base,0.8244,0.0201,0.7187,0.0289,0.9124,0.0272,0.8037,0.0188
-vinai/bertweet-base,0.8222,0.0084,0.7187,0.0137,0.9011,0.0049,0.7996,0.0068
-cardiffnlp/twitter-roberta-base,0.82,0.0033,0.7118,0.0118,0.9124,0.0213,0.7995,0.0009
-bert-base-uncased,0.8178,0.0069,0.7172,0.0134,0.887,0.0098,0.793,0.0045
-microsoft/deberta-base,0.81,0.0186,0.7029,0.0289,0.8983,0.0085,0.7884,0.0149
